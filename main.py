@@ -34,7 +34,7 @@ def compute_segments(svg_values, video_total_time, user_input_clipthreshold):
     
     # this should be 1000, but grab the final X coord just in case
     end_cord, _ = svg_values[len(svg_values)-1]
-    seconds_delta = round(video_total_time / end_cord)
+    seconds_delta = round(video_total_time / end_cord, 2)
 
     segments = []
     start_clip = 0.0
@@ -44,8 +44,12 @@ def compute_segments(svg_values, video_total_time, user_input_clipthreshold):
     for xseconds, ythreshold in svg_values:
         if ythreshold <= user_input_clipthreshold and start_clip == 0.0: # if the threshold is less than the user input and we haven't set the start yet, set it to xseconds
             start_clip = xseconds * seconds_delta
+            if start_clip > video_total_time:
+                start_clip == 0.0
         elif ythreshold > user_input_clipthreshold and start_clip != 0.0: # if the threshold is greater than the user input and we have set the start yet, set the stop to xseconds
             stop_clip = xseconds * seconds_delta
+            if stop_clip > video_total_time:
+                stop_clip = video_total_time
             start_clip_datetime = str(timedelta(seconds=start_clip))
             stop_clip_datetime = str(timedelta(seconds=stop_clip))
             segments.append((start_clip_datetime, stop_clip_datetime)) # append the start and stop to the segemnts list
@@ -68,8 +72,8 @@ def create_cliped_vlideo(segments, user_input_video, video_title):
     final_clip.close()
 
 np.set_printoptions(precision=1)
-# user_input_video = input("Enter the path of your video: ")
-user_input_video = "C:/Users/rmaca/Downloads/videoplayback.mp4"
+user_input_video = input("Enter the path of your video: ")
+# user_input_video = "C:/Users/rmaca/Downloads/videoplayback.mp4"
 assert os.path.exists(user_input_video), "I did not find the file at, "+str(user_input_video)
 
 user_input_heatmap = input("Enter the path of your svg data: ")
