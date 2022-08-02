@@ -55,7 +55,7 @@ def compute_segments(svg_values, video_total_time, user_input_clipthreshold):
 
     return segments, total_clip_time
 
-def create_cliped_vlideo(segments, user_input_video):
+def create_cliped_vlideo(segments, user_input_video, video_title):
     video = mp.VideoFileClip(user_input_video)
     clips = []  # list of all video fragments
     for start_seconds, end_seconds in segments:
@@ -64,16 +64,19 @@ def create_cliped_vlideo(segments, user_input_video):
         clips.append(c)
 
     final_clip = mp.concatenate_videoclips(clips)
-    final_clip.write_videofile("my_new_video2.mp4")
+    final_clip.write_videofile(video_title+".mp4")
     final_clip.close()
 
 np.set_printoptions(precision=1)
 # user_input_video = input("Enter the path of your video: ")
 user_input_video = "C:/Users/rmaca/Downloads/videoplayback.mp4"
-user_input_heatmap = "test-data.txt"
+assert os.path.exists(user_input_video), "I did not find the file at, "+str(user_input_video)
+
+user_input_heatmap = input("Enter the path of your svg data: ")
+assert os.path.exists(user_input_heatmap), "I did not find the file at, "+str(user_input_heatmap)
 #user_input_clipthreshold = 70
       
-assert os.path.exists(user_input_video), "I did not find the file at, "+str(user_input_video)
+
  
 video_total_time = calc_video_length_in_seconds(user_input_video)
 
@@ -98,4 +101,5 @@ while True:
     else:
         continue 
 
-create_cliped_vlideo(segments, user_input_video)
+user_input_title = input("Enter a title for your video: ")
+create_cliped_vlideo(segments, user_input_video, user_input_title)
